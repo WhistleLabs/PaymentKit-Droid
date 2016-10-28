@@ -134,7 +134,6 @@ public class CardNumHolder extends RelativeLayout {
 		mLeftOffset = fullWidth - fourDigitsWidth;
 		ViewUtils.setMarginLeft(mLastFourDigits, (int) mLeftOffset);
 		// align digits on right
-		mLastFourDigits.setTextColor(Color.DKGRAY);
 		mLastFourDigits.setVisibility(View.VISIBLE);
 	}
 

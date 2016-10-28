@@ -79,7 +79,6 @@ public class CardNumEditText extends EditText {
 	TextWatcher mCardNumberTextWatcher = new TextWatcher() {
 		@Override
 		public void afterTextChanged(Editable s) {
-			setTextColor(Color.DKGRAY);
 			mCardEntryListener.onEdit();
 			if (length() == mMaxCardLength && mTextAdded) {
 				mCardEntryListener.onCardNumberInputComplete();
