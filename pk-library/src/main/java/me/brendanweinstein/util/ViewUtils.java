@@ -21,10 +21,11 @@ public class ViewUtils {
 	private static final int LAYER_TYPE_NONE = 0;
 	private static final int LAYER_TYPE_SOFTWARE = 1;
 	
-	public static void hideSoftKeyboard(final Activity activity) {
-		if (activity.getCurrentFocus() != null) {
-			final InputMethodManager imm = (InputMethodManager) activity.getSystemService(activity.INPUT_METHOD_SERVICE);
-			imm.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
+	public static void hideSoftKeyboard(final View view) {
+		if (view != null) {
+			Context context = view.getContext();
+			final InputMethodManager imm = (InputMethodManager) context.getSystemService(context.INPUT_METHOD_SERVICE);
+			imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 		}
 	}
 

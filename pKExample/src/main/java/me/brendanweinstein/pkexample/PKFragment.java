@@ -42,7 +42,7 @@ public class PKFragment extends Fragment {
   private OnClickListener mSaveBtnListener = new OnClickListener() {
     @Override
     public void onClick(View v) {
-      ViewUtils.hideSoftKeyboard(getActivity());
+      ViewUtils.hideSoftKeyboard(v);
       if (mFieldHolder.isFieldsValid()) {
         ToastUtils.showToast(getActivity(), "Valid credit card entry!");
       } else {

@@ -1,6 +1,5 @@
 package me.brendanweinstein.views;
 
-import android.app.Activity;
 import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -49,7 +48,7 @@ public class CVVEditText extends EditText {
 	                event.getAction() == KeyEvent.ACTION_DOWN &&
 	                event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
 	        	clearFocus();
-	        	ViewUtils.hideSoftKeyboard((Activity)getContext());
+	        	ViewUtils.hideSoftKeyboard(CVVEditText.this);
 	            return true;
 	        }
 	        return false;
@@ -115,7 +114,7 @@ public class CVVEditText extends EditText {
 		public void afterTextChanged(Editable s) {
 			if (s.length() == FieldHolder.CVV_MAX_LENGTH) {
 				//mListener.onCVVEntryComplete();
-				ViewUtils.hideSoftKeyboard((Activity)getContext());
+				ViewUtils.hideSoftKeyboard(CVVEditText.this);
 				clearFocus();
 			}
 		}
