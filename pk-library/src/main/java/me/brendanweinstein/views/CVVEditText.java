@@ -113,8 +113,7 @@ public class CVVEditText extends EditText {
 		@Override
 		public void afterTextChanged(Editable s) {
 			if (s.length() == FieldHolder.CVV_MAX_LENGTH) {
-				//mListener.onCVVEntryComplete();
-				ViewUtils.hideSoftKeyboard(CVVEditText.this);
+				mListener.onCVVEntryComplete();
 				clearFocus();
 			}
 		}
