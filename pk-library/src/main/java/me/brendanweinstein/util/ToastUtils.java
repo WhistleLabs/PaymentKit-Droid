@@ -33,7 +33,9 @@ public class ToastUtils {
 	}
 
 	public static void showToast(Context context, String text) {
-		showToast((Activity) context, text, Toast.LENGTH_SHORT);
+		if (context instanceof Activity) {
+			showToast((Activity) context, text, Toast.LENGTH_SHORT);
+		}
 	}
 
 	public static void showToast(Activity activity, String text, int duration) {
