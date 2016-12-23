@@ -61,7 +61,6 @@ public class CardNumHolder extends RelativeLayout {
 
 	public boolean isCardNumValid() {
 		if (mCardNumberEditText.length() < mCardNumberEditText.getMaxCardLength()) {
-			ToastUtils.showToast(getContext(), "Please enter a valid card number");
 			return false;
 		} else if (mCardNumberEditText.length() == mCardNumberEditText.getMaxCardLength()) {
 			if (ValidateCreditCard.isValid(Long.parseLong(getCardField().getText().toString().replaceAll("\\s", "")))) {
