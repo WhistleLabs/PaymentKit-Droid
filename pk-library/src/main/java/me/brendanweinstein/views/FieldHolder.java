@@ -272,12 +272,11 @@ public class FieldHolder extends RelativeLayout {
 		@Override
 		public void onCVVEntryComplete() {
 			Log.d(TAG, "onCVVEntryComplete");
-			mCardIcon.flipTo(CardIcon.CardFace.FRONT);
-			FieldHolder.this.requestFocus();
-			// complete
-
-			if (mCompletionListener != null) {
-				mCompletionListener.onValidFormComplete();
+			if (isFieldsValid()) {
+				mCardIcon.flipTo(CardIcon.CardFace.FRONT);
+				if (mCompletionListener != null) {
+					mCompletionListener.onValidFormComplete();
+				}
 			}
 		}
 
