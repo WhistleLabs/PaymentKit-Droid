@@ -43,6 +43,12 @@ public class FieldHolder extends RelativeLayout {
 	private CVVEditText mCVVEditText;
 	private CardIcon mCardIcon;
 	private LinearLayout mExtraFields;
+	private CompletionListener mCompletionListener;
+
+	public interface CompletionListener {
+		void onValidFormComplete();
+		void onValidFormBackspace();
+	}
 	
 	public FieldHolder(Context context) {
 		super(context);
@@ -233,6 +239,10 @@ public class FieldHolder extends RelativeLayout {
 			mCardIcon.flipTo(CardIcon.CardFace.FRONT);
 			FieldHolder.this.requestFocus();
 			// complete
+
+			if (mCompletionListener != null) {
+				mCompletionListener.onValidFormComplete();
+			}
 		}
 
 		@Override
@@ -240,6 +250,10 @@ public class FieldHolder extends RelativeLayout {
 			Log.d(TAG, "onBackFromCVV");
 			mExpirationEditText.requestFocus();
 			mCardIcon.flipTo(CardIcon.CardFace.FRONT);
+
+			if (mCompletionListener != null) {
+				mCompletionListener.onValidFormBackspace();
+			}
 		}
 
 	};
@@ -253,4 +267,7 @@ public class FieldHolder extends RelativeLayout {
 		return true;
 	}
 
+	public void setCompletionListener(CompletionListener completionListener) {
+		mCompletionListener = completionListener;
+	}
 }
