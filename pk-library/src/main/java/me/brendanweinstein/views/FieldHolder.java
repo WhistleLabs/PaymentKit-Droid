@@ -5,7 +5,10 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.graphics.Color;
+import android.text.Editable;
 import android.text.InputFilter;
+import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -44,6 +47,8 @@ public class FieldHolder extends RelativeLayout {
 	private CardIcon mCardIcon;
 	private LinearLayout mExtraFields;
 	private CompletionListener mCompletionListener;
+
+	private int mOriginalTextColor = Color.BLACK;
 
 	public interface CompletionListener {
 		void onValidFormComplete();
@@ -114,6 +119,37 @@ public class FieldHolder extends RelativeLayout {
 	private void setCardEntryListeners() {
 		mExpirationEditText.setCardEntryListener(mCardEntryListener);
 		mCVVEditText.setCardEntryListener(mCardEntryListener);
+		mCardHolder.getCardField().addTextChangedListener(new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+			}
+
+			@Override
+			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+			}
+
+			@Override
+			public void afterTextChanged(Editable editable) {
+				// Only reset the color if we're showing the invalid card number color (see CardNumHolder.indicateInvalidCardNum())
+				if (mCardHolder.getCardField().getCurrentTextColor() == Color.RED) {
+					CardType cardType = ValidateCreditCard.getCardType(mCardHolder.getCardField().getText().toString());
+					switch (cardType) {
+						case AMERICAN_EXPRESS:
+							if (editable.length() < AMEX_CARD_LENGTH) {
+								mCardHolder.getCardField().setTextColor(mOriginalTextColor);
+							}
+							break;
+						default:
+							if (editable.length() < NON_AMEX_CARD_LENGTH) {
+								mCardHolder.getCardField().setTextColor(mOriginalTextColor);
+							}
+							break;
+					}
+				}
+			}
+		});
 	}
 
 	private void validateCard() {
