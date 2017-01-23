@@ -52,7 +52,7 @@ public class FieldHolder extends RelativeLayout {
 
 	public interface CompletionListener {
 		void onValidFormComplete();
-		void onValidFormBackspace();
+		void onFormInvalidated();
 	}
 	
 	public FieldHolder(Context context) {
@@ -119,21 +119,13 @@ public class FieldHolder extends RelativeLayout {
 	private void setCardEntryListeners() {
 		mExpirationEditText.setCardEntryListener(mCardEntryListener);
 		mCVVEditText.setCardEntryListener(mCardEntryListener);
-		mCardHolder.getCardField().addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-			}
-
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-			}
-
+		mCardHolder.getCardField().addTextChangedListener(new PaymentFormCompletionTextWatcher() {
 			@Override
 			public void afterTextChanged(Editable editable) {
-				// Only reset the color if we're showing the invalid card number color (see CardNumHolder.indicateInvalidCardNum())
-				if (mCardHolder.getCardField().getCurrentTextColor() == Color.RED) {
+                super.afterTextChanged(editable);
+
+                // Only reset the color if we're showing the invalid card number color (see CardNumHolder.indicateInvalidCardNum())
+				if (isUsingInvalidCardNumberColor()) {
 					CardType cardType = ValidateCreditCard.getCardType(mCardHolder.getCardField().getText().toString());
 					switch (cardType) {
 						case AMERICAN_EXPRESS:
@@ -150,7 +142,13 @@ public class FieldHolder extends RelativeLayout {
 				}
 			}
 		});
+        mExpirationEditText.addTextChangedListener(new PaymentFormCompletionTextWatcher());
+        mCVVEditText.addTextChangedListener(new PaymentFormCompletionTextWatcher());
 	}
+
+    private boolean isUsingInvalidCardNumberColor() {
+        return mCardHolder.getCardField().getCurrentTextColor() == Color.RED;
+    }
 
 	private void validateCard() {
 		long cardNumber = Long.parseLong(mCardHolder.getCardField().getText().toString().replaceAll("\\s", ""));
@@ -285,10 +283,6 @@ public class FieldHolder extends RelativeLayout {
 			Log.d(TAG, "onBackFromCVV");
 			mExpirationEditText.requestFocus();
 			mCardIcon.flipTo(CardIcon.CardFace.FRONT);
-
-			if (mCompletionListener != null) {
-				mCompletionListener.onValidFormBackspace();
-			}
 		}
 
 	};
@@ -300,12 +294,7 @@ public class FieldHolder extends RelativeLayout {
 			return false;
 		}
 
-		CardType cardType = ValidateCreditCard.getCardType(mCardHolder.getCardField().getText().toString());
-		if (cardType == CardType.AMERICAN_EXPRESS) {
-			return mCardHolder.getCardField().getText().length() == AMEX_CARD_LENGTH;
-		} else {
-			return mCardHolder.getCardField().getText().length() == NON_AMEX_CARD_LENGTH;
-		}
+        return mCardHolder.isCardNumValid();
 	}
 
 	public boolean isValidCard() {
@@ -316,4 +305,27 @@ public class FieldHolder extends RelativeLayout {
 	public void setCompletionListener(CompletionListener completionListener) {
 		mCompletionListener = completionListener;
 	}
+
+    private class PaymentFormCompletionTextWatcher implements TextWatcher {
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+            if (mCompletionListener != null) {
+                if (isFieldsValid()) {
+                    mCompletionListener.onValidFormComplete();
+                } else {
+                    mCompletionListener.onFormInvalidated();
+                }
+            }
+        }
+    }
 }
