@@ -5,7 +5,10 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.graphics.Color;
+import android.text.Editable;
 import android.text.InputFilter;
+import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -43,6 +46,14 @@ public class FieldHolder extends RelativeLayout {
 	private CVVEditText mCVVEditText;
 	private CardIcon mCardIcon;
 	private LinearLayout mExtraFields;
+	private CompletionListener mCompletionListener;
+
+	private int mOriginalTextColor = Color.BLACK;
+
+	public interface CompletionListener {
+		void onValidFormComplete();
+		void onFormInvalidated();
+	}
 	
 	public FieldHolder(Context context) {
 		super(context);
@@ -108,7 +119,36 @@ public class FieldHolder extends RelativeLayout {
 	private void setCardEntryListeners() {
 		mExpirationEditText.setCardEntryListener(mCardEntryListener);
 		mCVVEditText.setCardEntryListener(mCardEntryListener);
+		mCardHolder.getCardField().addTextChangedListener(new PaymentFormCompletionTextWatcher() {
+			@Override
+			public void afterTextChanged(Editable editable) {
+                super.afterTextChanged(editable);
+
+                // Only reset the color if we're showing the invalid card number color (see CardNumHolder.indicateInvalidCardNum())
+				if (isUsingInvalidCardNumberColor()) {
+					CardType cardType = ValidateCreditCard.getCardType(mCardHolder.getCardField().getText().toString());
+					switch (cardType) {
+						case AMERICAN_EXPRESS:
+							if (editable.length() < AMEX_CARD_LENGTH) {
+								mCardHolder.getCardField().setTextColor(mOriginalTextColor);
+							}
+							break;
+						default:
+							if (editable.length() < NON_AMEX_CARD_LENGTH) {
+								mCardHolder.getCardField().setTextColor(mOriginalTextColor);
+							}
+							break;
+					}
+				}
+			}
+		});
+        mExpirationEditText.addTextChangedListener(new PaymentFormCompletionTextWatcher());
+        mCVVEditText.addTextChangedListener(new PaymentFormCompletionTextWatcher());
 	}
+
+    private boolean isUsingInvalidCardNumberColor() {
+        return mCardHolder.getCardField().getCurrentTextColor() == Color.RED;
+    }
 
 	private void validateCard() {
 		long cardNumber = Long.parseLong(mCardHolder.getCardField().getText().toString().replaceAll("\\s", ""));
@@ -230,9 +270,12 @@ public class FieldHolder extends RelativeLayout {
 		@Override
 		public void onCVVEntryComplete() {
 			Log.d(TAG, "onCVVEntryComplete");
-			mCardIcon.flipTo(CardIcon.CardFace.FRONT);
-			FieldHolder.this.requestFocus();
-			// complete
+			if (isFieldsValid()) {
+				mCardIcon.flipTo(CardIcon.CardFace.FRONT);
+				if (mCompletionListener != null) {
+					mCompletionListener.onValidFormComplete();
+				}
+			}
 		}
 
 		@Override
@@ -250,7 +293,39 @@ public class FieldHolder extends RelativeLayout {
 		} else if (mCVVEditText.getText().toString().length() != CVV_MAX_LENGTH) {
 			return false;
 		}
-		return true;
+
+        return mCardHolder.isCardNumValid();
 	}
 
+	public boolean isValidCard() {
+		long cardNumber = Long.parseLong(mCardHolder.getCardField().getText().toString().replaceAll("\\s", ""));
+		return ValidateCreditCard.isValid(cardNumber);
+	}
+
+	public void setCompletionListener(CompletionListener completionListener) {
+		mCompletionListener = completionListener;
+	}
+
+    private class PaymentFormCompletionTextWatcher implements TextWatcher {
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+            if (mCompletionListener != null) {
+                if (isFieldsValid()) {
+                    mCompletionListener.onValidFormComplete();
+                } else {
+                    mCompletionListener.onFormInvalidated();
+                }
+            }
+        }
+    }
 }
