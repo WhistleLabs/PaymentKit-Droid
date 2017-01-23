@@ -299,7 +299,18 @@ public class FieldHolder extends RelativeLayout {
 		} else if (mCVVEditText.getText().toString().length() != CVV_MAX_LENGTH) {
 			return false;
 		}
-		return true;
+
+		CardType cardType = ValidateCreditCard.getCardType(mCardHolder.getCardField().getText().toString());
+		if (cardType == CardType.AMERICAN_EXPRESS) {
+			return mCardHolder.getCardField().getText().length() == AMEX_CARD_LENGTH;
+		} else {
+			return mCardHolder.getCardField().getText().length() == NON_AMEX_CARD_LENGTH;
+		}
+	}
+
+	public boolean isValidCard() {
+		long cardNumber = Long.parseLong(mCardHolder.getCardField().getText().toString().replaceAll("\\s", ""));
+		return ValidateCreditCard.isValid(cardNumber);
 	}
 
 	public void setCompletionListener(CompletionListener completionListener) {
