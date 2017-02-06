@@ -141,14 +141,13 @@ public class ExpirationEditText extends EditText {
 	public String getMonth() {
 		String text = getText().toString();
 		int index = text.indexOf("/");
-		return text.substring(0, index);
+		return index == -1 ? null : text.substring(0, index);
 	}
 
 	public String getYear() {
 		String text = getText().toString();
 		int index = text.indexOf("/");
-		String yearStr = "20" + text.substring(index + 1, text.length());
-		return yearStr;
+		return index == -1 ? null : "20" + text.substring(index + 1, text.length());
 	}
 
 	@Override
