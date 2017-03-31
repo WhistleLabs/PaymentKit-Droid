@@ -7,7 +7,6 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Color;
 import android.text.Editable;
-import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -31,8 +30,6 @@ import me.brendanweinstein.util.ViewUtils;
 public class FieldHolder extends RelativeLayout {
 
 	private static final String TAG = FieldHolder.class.getSimpleName();
-	
-	public static int CVV_MAX_LENGTH = 3;
 	
 	protected static final int AMEX_CARD_LENGTH = 17;
 	public static final int NON_AMEX_CARD_LENGTH = 19;
@@ -206,13 +203,6 @@ public class FieldHolder extends RelativeLayout {
 
 	}
 	
-	private void setCVVMaxLength(int val) {
-		CVV_MAX_LENGTH = val;
-		InputFilter[] filters = new InputFilter[1];
-		filters[0] = new InputFilter.LengthFilter(val);
-		mCVVEditText.setFilters(filters);
-	}
-
 	CardEntryListener mCardEntryListener = new CardEntryListener() {
 		@Override
 		public void onCardNumberInputComplete() {
@@ -224,10 +214,10 @@ public class FieldHolder extends RelativeLayout {
 			CardType newCardType = ValidateCreditCard.getCardType(mCardHolder.getCardField().getText().toString());
 			if (newCardType == CardType.AMERICAN_EXPRESS) {
 				mCardHolder.getCardField().setMaxCardLength(AMEX_CARD_LENGTH);
-				setCVVMaxLength(4);
+				mCVVEditText.setCvvMaxLength(4);
 			} else {
 				mCardHolder.getCardField().setMaxCardLength(NON_AMEX_CARD_LENGTH);
-				setCVVMaxLength(3);
+				mCVVEditText.setCvvMaxLength(3);
 			}
 			mCardIcon.setCardType(ValidateCreditCard.getCardType(mCardHolder.getCardField().getText().toString()));
 		}
@@ -290,7 +280,7 @@ public class FieldHolder extends RelativeLayout {
 	public boolean isFieldsValid() {
 		if (mExpirationEditText.getText().toString().length() != 5) {
 			return false;
-		} else if (mCVVEditText.getText().toString().length() != CVV_MAX_LENGTH) {
+		} else if (mCVVEditText.getText().toString().length() != mCVVEditText.getCvvMaxLength()) {
 			return false;
 		}
 

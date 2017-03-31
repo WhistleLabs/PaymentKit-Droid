@@ -19,9 +19,11 @@ import me.brendanweinstein.views.FieldHolder.CardEntryListener;
 public class CVVEditText extends EditText {
 	
 	private static final String TAG = CVVEditText.class.getSimpleName();
-	
+
+	public static final int DEFAULT_CVV_MAX_LENGTH = 3;
+
 	private CardEntryListener mListener;
-    private int mMaxLength = FieldHolder.CVV_MAX_LENGTH;
+    private int mMaxLength = DEFAULT_CVV_MAX_LENGTH;
 
 	public CVVEditText(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -49,6 +51,10 @@ public class CVVEditText extends EditText {
         filters[0] = new InputFilter.LengthFilter(mMaxLength);
         setFilters(filters);
     }
+
+    public int getCvvMaxLength() {
+		return mMaxLength;
+	}
 	
 	private OnEditorActionListener mEditorActionListener = new EditText.OnEditorActionListener() {
 	    @Override
