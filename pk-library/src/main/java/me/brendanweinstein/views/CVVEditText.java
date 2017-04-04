@@ -23,7 +23,7 @@ public class CVVEditText extends EditText {
 	public static final int DEFAULT_CVV_MAX_LENGTH = 3;
 
 	private CardEntryListener mListener;
-    private int mMaxLength = DEFAULT_CVV_MAX_LENGTH;
+`	private int mMaxLength = DEFAULT_CVV_MAX_LENGTH;
 
 	public CVVEditText(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -46,13 +46,13 @@ public class CVVEditText extends EditText {
 	}
 
 	public void setCvvMaxLength(int cvvMaxLength) {
-        mMaxLength = cvvMaxLength;
-        InputFilter[] filters = new InputFilter[1];
-        filters[0] = new InputFilter.LengthFilter(mMaxLength);
-        setFilters(filters);
-    }
+		mMaxLength = cvvMaxLength;
+		InputFilter[] filters = new InputFilter[1];
+		filters[0] = new InputFilter.LengthFilter(mMaxLength);
+		setFilters(filters);
+	}
 
-    public int getCvvMaxLength() {
+	public int getCvvMaxLength() {
 		return mMaxLength;
 	}
 	
@@ -143,5 +143,4 @@ public class CVVEditText extends EditText {
 				int count) {
 		}
 	};
-
 }
