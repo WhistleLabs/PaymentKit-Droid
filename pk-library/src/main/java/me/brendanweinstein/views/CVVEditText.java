@@ -23,7 +23,7 @@ public class CVVEditText extends EditText {
 	public static final int DEFAULT_CVV_MAX_LENGTH = 3;
 
 	private CardEntryListener mListener;
-`	private int mMaxLength = DEFAULT_CVV_MAX_LENGTH;
+	private int mMaxLength = DEFAULT_CVV_MAX_LENGTH;
 
 	public CVVEditText(Context context, AttributeSet attrs) {
 		super(context, attrs);
