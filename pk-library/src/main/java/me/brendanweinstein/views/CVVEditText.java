@@ -2,6 +2,7 @@ package me.brendanweinstein.views;
 
 import android.content.Context;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
@@ -18,8 +19,11 @@ import me.brendanweinstein.views.FieldHolder.CardEntryListener;
 public class CVVEditText extends EditText {
 	
 	private static final String TAG = CVVEditText.class.getSimpleName();
-	
+
+	public static final int DEFAULT_CVV_MAX_LENGTH = 3;
+
 	private CardEntryListener mListener;
+	private int mMaxLength = DEFAULT_CVV_MAX_LENGTH;
 
 	public CVVEditText(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -39,6 +43,17 @@ public class CVVEditText extends EditText {
 	
 	public void setCardEntryListener(CardEntryListener listener) {
 		mListener = listener;
+	}
+
+	public void setCvvMaxLength(int cvvMaxLength) {
+		mMaxLength = cvvMaxLength;
+		InputFilter[] filters = new InputFilter[1];
+		filters[0] = new InputFilter.LengthFilter(mMaxLength);
+		setFilters(filters);
+	}
+
+	public int getCvvMaxLength() {
+		return mMaxLength;
 	}
 	
 	private OnEditorActionListener mEditorActionListener = new EditText.OnEditorActionListener() {
@@ -112,7 +127,7 @@ public class CVVEditText extends EditText {
 	private TextWatcher mTextWatcher = new TextWatcher() {
 		@Override
 		public void afterTextChanged(Editable s) {
-			if (s.length() == FieldHolder.CVV_MAX_LENGTH) {
+			if (s.length() == mMaxLength) {
 				mListener.onCVVEntryComplete();
 				clearFocus();
 			}
@@ -128,5 +143,4 @@ public class CVVEditText extends EditText {
 				int count) {
 		}
 	};
-
 }
